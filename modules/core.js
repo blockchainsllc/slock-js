@@ -1,11 +1,11 @@
-module.exports = function(data) {
+module.exports = function(configData) {
 
 	var EventEmitter = require("events").EventEmitter;
 	
 	// create main-object
 	var main = {
 	   events : new EventEmitter(),
-	   config : data,
+	   config : configData,
 	   modules: [],
 	};
 
