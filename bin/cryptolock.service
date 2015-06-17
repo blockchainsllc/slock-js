@@ -7,6 +7,8 @@ After=network.target
 WantedBy=multi-user.target
 
 [Service]
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=cryptolock
 Restart=always
-Type=forking
-ExecStart=/opt/cryptolock-js/bin/cryptolock.sh
+ExecStart=node bin/cryptolock.js
