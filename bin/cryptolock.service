@@ -1,0 +1,12 @@
+[Unit]
+Description=ethereum cryptolock service
+Requires=network.target
+After=network.target
+
+[Install]
+WantedBy=multi-user.target
+
+[Service]
+Restart=always
+Type=forking
+ExecStart=/opt/cryptolock-js/bin/cryptolock.sh
