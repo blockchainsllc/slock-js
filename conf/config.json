@@ -1,0 +1,28 @@
+{
+    "modules" : {
+		  "eth" : {
+			  "client"   : "54.148.252.204:8080",
+			  "contracts" : {
+				  "doorlock4" : {
+					  "adr"        : "0x87bb217883541a312fac2977c2a744219963586f",
+					  "useStorage" : false,
+					  "nodeid"     : 4,
+					  "command"    : 98,
+					  "open"       : 0,
+					  "close"      : 255
+				  },
+				  "switch" : {
+					  "adr"        : "0xd463562e37cf461411e16b2f7d945b8ddae2bda9",
+					  "useStorage" : false,
+					  "nodeid"     : 2
+				  }
+			  }  
+			  
+		  },
+		  
+		  "zway" : {
+		     "host" : "localhost",
+		     "port" : 8083
+		  }
+    }                 
+}

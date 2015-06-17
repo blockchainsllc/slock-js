@@ -1,0 +1,22 @@
+{
+  "name": "cryptolock",
+  "version": "0.1.0",
+  "description": "main application controlling the cryptolock-device",
+  "main": "cryptolock.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified! Configure in package.json\" && exit 1"
+  },
+  "repository": "",
+  "dependencies": {
+    "events": "~1.0.2",
+    "web3": "^0.2.7"
+  },
+  "devDependencies": {},
+  "keywords": [
+    "node.js",
+    "eclipse",
+    "nodeclipse"
+  ],
+  "author": "",
+  "license": "MIT"
+}
