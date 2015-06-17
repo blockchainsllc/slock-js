@@ -1,7 +1,7 @@
 {
     "modules" : {
 		  "eth" : {
-			  "client"   : "54.148.252.204:8080",
+			  "client"   : "localhost:8545",
 			  "contracts" : {
 				  "doorlock4" : {
 					  "adr"        : "0x87bb217883541a312fac2977c2a744219963586f",
