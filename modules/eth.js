@@ -7,18 +7,21 @@ function Contract(id,config,events,web3) {
       { name: 'Open',           type: 'event',      inputs: [],   outputs: []  },
       { name: 'Close',          type: 'event',      inputs: [],   outputs: []  },
     ]);
-    this.contract = new EContract(config.adr); 
+    this.contract = EContract.at(config.adr); 
 }
 
 Contract.prototype = {
-   config   :"",
+   config   :{},
    id       :"",
    lastOpen : "",
    events   : null,
    contract :null,
    lastNumber:0,
    
-   changeState :function(isOpen) {
+   changeState :function(isOpen, fromMessage) {
+	   
+	   if (this.config.useMessage && !fromMessage) return; 
+	   
 	   this.events.emit("changeState",{
 		   open   : isOpen,
 		   id     : this.id,
@@ -59,7 +62,11 @@ Contract.prototype = {
 		   this.closeEvent = this.contract.Close();
 		   this.openEvent.watch (function(err,result){_.checkEvent(true, result,err);});
 		   this.closeEvent.watch(function(err,result){_.checkEvent(false, result,err);});
-	   } 
+	   }
+	   
+	   if  (this.config.useMessage) {
+		   
+	   }
 		   
    },
    

@@ -12,5 +12,5 @@ StandardError=syslog
 SyslogIdentifier=cryptolock
 Restart=always
 KillMode=process
-ExecStart=node /opt/cryptolock-js/bin/cryptolock.js
+ExecStart=/usr/bin/node /opt/cryptolock-js/bin/cryptolock.js
 WorkingDirectory=/opt/cryptolock-js/bin
