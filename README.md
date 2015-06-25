@@ -50,7 +50,6 @@ The object passed as argument will give you the following properties:
 -	   <b>id</b> : the id (or key within the config)
 
 
-
 #### "changeState"-Event
 
 This Event will be triggered if a contract tells the device, that it needs to change its state. 

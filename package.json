@@ -1,11 +1,8 @@
 {
   "name": "cryptolock",
   "version": "0.1.0",
-  "description": "main application controlling the cryptolock-device",
+  "description": "main application controlling the slock-device",
   "main": "cryptolock.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified! Configure in package.json\" && exit 1"
-  },
   "repository": "",
   "dependencies": {
     "events": "~1.0.2",
@@ -18,6 +15,6 @@
     "eclipse",
     "nodeclipse"
   ],
-  "author": "",
+  "author": "slockt.it",
   "license": "MIT"
 }

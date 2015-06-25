@@ -1,4 +1,4 @@
-// this module simply reads a config-file and starts the app
+// this scripts simply reads a config-file and starts the app
 // if the config is changed another reload-event will be triggered
 
 var fs   = require('fs');
