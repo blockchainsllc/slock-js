@@ -11,7 +11,7 @@ module.exports = function(configData) {
 
 	// create modules
 	Object.keys(main.config.modules).forEach(function(module) {
-	    var ModuleClass = require('./'+module+".js"); 
+	    var ModuleClass = require('../modules/'+module+".js"); 
 		ModuleClass.prototype.__proto__=main;
 		console.log("loading module "+module);
 		var m = new ModuleClass();

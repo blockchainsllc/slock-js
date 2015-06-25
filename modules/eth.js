@@ -29,6 +29,8 @@ Contract.prototype = {
 	   });
    },
    
+   
+   
    checkEvent : function(isOpen, result,err) {
 //	   console.log("got event for "+this.id+" : #"+result.number+" "+result.event+" hash:"+result.hash+" :"+err);
 	   if (err) {
@@ -43,9 +45,24 @@ Contract.prototype = {
 	   
    	   this.changeState(this.lastOpen = isOpen);
    },
+   
+   isAllowed : function(user) {
+	   //TODO confirm the user of the message
+	  return true;  
+   },
+   
+   isStateOpen :  function() {
+	   var open = this.storageIsOpen();
+	   return open!=="0x" && open!=="0x0";
+   },
+   
+   storageIsOpen : function() {
+	   return this.web3.eth.getStorageAt(this.config.adr,4);
+   },
+   
    checkStorage : function() {
 	  // read openCount
-      var open = this.web3.eth.getStorageAt(this.config.adr,4);
+      var open = this.storageIsOpen();
       if (open!==this.lastOpen) {
     	  this.lastOpen = open;
     	  this.changeState(open!=="0x" && open!=="0x0");
@@ -64,9 +81,8 @@ Contract.prototype = {
 		   this.closeEvent.watch(function(err,result){_.checkEvent(false, result,err);});
 	   }
 	   
-	   if  (this.config.useMessage) {
-		   
-	   }
+	   if  (this.config.useMessage) 
+		    this.events.emit("watchContract", this);
 		   
    },
    
@@ -87,14 +103,24 @@ function Eth() {}
 Eth.prototype = {
 		
    contracts : [],
+   
+   handleMessage : function(msg) {
+       this.contracts.forEach(function(c) {
+    	   if (c.config.adr==msg.to && c.storageIsOpen() && c.isAllowed(msg.from))
+	    		   // now send open-event
+	    		   c.changeState(msg.msg.indexOf("open")>=0, true);
+       });  
+   },
 		
    init : function(arg) {
-	 var config = arg.config.modules.eth;
+	 var config = arg.config.modules.eth, _=this;
      console.log("Init contracts for client "+config.client);
      
      // stop if this is a reinit
      if (arg.oldConfig)
-       this.contracts.forEach(function(c) {	 c.stopWatching();   });   
+       this.contracts.forEach(function(c) {	 c.stopWatching();   });  
+     else
+       arg.events.on("message",function(msg) { _.handleMessage(msg);});
      
      var contracts = this.contracts=[];
      
@@ -109,6 +135,7 @@ Eth.prototype = {
         c.startWatching();
         contracts.push(c);
  	 });     
+     
      
    }
 };

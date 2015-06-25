@@ -3,8 +3,6 @@ var http = require('http');
 function Zway() {}
 Zway.prototype = {
 		
-   deviceStates : {},
-
    init : function(arg) {
 	 var config = arg.config.modules.zway;
      console.log("Init zway-connection ...");
