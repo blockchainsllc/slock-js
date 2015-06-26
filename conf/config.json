@@ -9,12 +9,14 @@
 					  "nodeid"     : 4,
 					  "command"    : 98,
 					  "open"       : 0,
-					  "close"      : 255
+					  "close"      : 255,
+					  "stopOnError": true
 				  },
 				  "switch" : {
 					  "adr"        : "0xd463562e37cf461411e16b2f7d945b8ddae2bda9",
 					  "useStorage" : false,
-					  "nodeid"     : 2
+					  "nodeid"     : 2,
+					  "stopOnError": true
 				  }
 			  }  
 			  

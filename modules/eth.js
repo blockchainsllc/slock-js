@@ -52,6 +52,8 @@ Contract.prototype = {
 		checkEvent : function(isOpen, result,err) {
 			if (err) {
 				console.log("Error with "+this.id+" :"+err);
+				if (this.config.stopOnError && (""+err).indexOf("INVALID_PARAMS")>=0) 
+					process.exit(1);
 				return;
 			}
 
