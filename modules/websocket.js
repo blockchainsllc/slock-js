@@ -1,4 +1,18 @@
 var WebSocketClient = require('websocket').client;
+var os = require('os');
+
+
+function getIpAdresses() {
+	var ips = [];
+	var ifaces = os.networkInterfaces();
+    Object.keys(ifaces).forEach(function (ifname) {
+	  ifaces[ifname].forEach(function (iface) {
+	    if ('IPv4' !== iface.family || iface.internal !== false)  return;
+	    ips.push(iface.address);
+	  });
+	});
+    return ips;
+}
 
 module.exports = function() {
 
@@ -32,9 +46,10 @@ module.exports = function() {
 						events.emit("message", JSON.parse(message.utf8Data));
 					}
 				});
+				
 
 				// register with its id in order to be able to get messages
-				connection.sendUTF(JSON.stringify({	cmd : "init", adr : id	}));
+				connection.sendUTF(JSON.stringify({	cmd : "init", adr : id, ips: getIpAdresses()}));
 			});
 			
 			// start connection...
