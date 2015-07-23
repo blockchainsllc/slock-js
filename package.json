@@ -2,8 +2,20 @@
   "name": "cryptolock",
   "version": "0.1.0",
   "description": "main application controlling the slock-device",
+  "homepage": "http://slock.it",
   "main": "cryptolock.js",
-  "repository": "https://github.com/slockit/cryptolock-js",
+  "bugs": {
+    "url"   : "https://github.com/slockit/cryptolock-js/issues",
+    "email" : "simon@jentzschfamily.net" 
+  },
+  "repository": {
+     "type" : "git",
+     "url"  : "https://github.com/slockit/cryptolock-js" 
+  },
+  "scripts": {
+    "test": "mocha",
+    "run" : "bin/cryptolock.js"
+  },
   "dependencies": {
     "events": "~1.0.2",
     "web3": "^0.6.0",

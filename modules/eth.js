@@ -35,7 +35,8 @@ Contract.prototype = {
 			this.events.emit("changeState",{
 				open   : isOpen,
 				id     : this.id,
-				config : this.config
+				config : this.config,
+        sender : this
 			});
 		},
 

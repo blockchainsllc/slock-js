@@ -30,10 +30,10 @@ Each Module can define any kind of event in order tocommunicate with eachother, 
 After creating all Instances the Init-Method (if existing) will be called. This is a special behavior, because it will give you an easier start-point.
 The object passed as argument will give you the following properties:
 
-- 	   <b>events</b> : a EventEmitter in order to register on the event-bus
+- 	 <b>events</b> : a EventEmitter in order to register on the event-bus
 -	   <b>config</b> : the configuration as read from the config.json (or passed in)
 -	   <b>modules</b>: a array of instances of all created Modules
-- 	   <b>oldConfig</b>: only set if this event is triggered during a reload of the config.
+- 	 <b>oldConfig</b>: only set if this event is triggered during a reload of the config.
 
 the init-Method may be called more than once, if the Config-file has changed and was reloaded. In this there the oldConfig will set.
 
@@ -46,7 +46,7 @@ This Event will be triggered if the eth-Module starts watching for the open/clos
 
 The object passed as argument will give you the following properties:
 
-- 	   <b>config</b> : the Configuration of the contractr as read from config. config.adr will hold the contract-adress.
+- 	 <b>config</b> : the Configuration of the contractr as read from config. config.adr will hold the contract-adress.
 -	   <b>id</b> : the id (or key within the config)
 
 
@@ -56,9 +56,9 @@ This Event will be triggered if a contract tells the device, that it needs to ch
 
 The object passed as argument will give you the following properties:
 
-- 	   <b>open</b> : a boolean true|false to indicate the targetState
+- 	 <b>open</b> : a boolean true|false to indicate the targetState
 -	   <b>id</b> : the id (or key within the config) of the device
-- 	   <b>config</b> : the Configuration of the contract as read from config. config.adr will hold the contract-adress.
+- 	 <b>config</b> : the Configuration of the contract as read from config. config.adr will hold the contract-adress.
 
 ### Events from the websocket-Module
 
@@ -68,8 +68,8 @@ Whenever a Message is received for one of the contract being watched. This event
 
 The Object passed as argument will give you the following properties:
 
-- 	   <b>from</b> : the adress of sender
+- 	 <b>from</b> : the adress of sender
 -	   <b>to</b> : the adress of the receiver
-- 	   <b>msg</b> : the text or message
+- 	 <b>msg</b> : the text or message
 
 

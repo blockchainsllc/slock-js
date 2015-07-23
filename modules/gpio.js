@@ -22,7 +22,10 @@ function setGpioValue(pin, param, value, runAfter) {
 function initPin(pin, runAfter) {
   fs.writeFile(gpioPath + "export", pin, function (err) {
     if (err) throw "Error trying to create the pin " + pin + ":" + err;
-    setGpioValue(pin, "direction", "out", runAfter);
+    fs.exists(gpioPath + "gpio" + pin + "/value", function (exists) {
+       if (!exists) throw "The pin "+pin+" could not be initialized. The Directory "+fs.realpathSync(gpioPath + "gpio" + pin)+" does not exist!";
+       setGpioValue(pin, "direction", "out", runAfter);
+    });
   });
 }
 
@@ -46,14 +49,25 @@ function changeState(arg) {
   
   console.log('GPIO : open ' + arg.id + "=" + arg.open);
   checkPin(arg.config.gpio, function () {
-    setGpioValue(arg.config.gpio, "value", arg.open ? 0 : 1);
+    setGpioValue(arg.config.gpio, "value", arg.open ? 0 : 1, function() {
+      arg.sender.events.emit("changedState", arg);
+    });
   });
 }
+
+/**
+ * only for tests in order to read the set value.
+ */
+function getGpioValue(pin, param) {
+   return fs.readFileSync(gpioPath + "gpio" + pin + "/" + param);
+}
+
 
 /**
  * constructor function which registers the changeState-event
  */
 module.exports = function () {
+  this.getGpioValue = getGpioValue;
   this.init = function (arg) {
     console.log("Start GPIO ...");
     arg.events.on('changeState', changeState);
