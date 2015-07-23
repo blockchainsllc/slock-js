@@ -59,7 +59,7 @@ function changeState(arg) {
  * only for tests in order to read the set value.
  */
 function getGpioValue(pin, param) {
-   return fs.readFileSync(gpioPath + "gpio" + pin + "/" + param, "utf8");
+   return fs.readFileSync(gpioPath + "gpio" + pin + "/" + param, "utf8").trim();
 }
 
 
