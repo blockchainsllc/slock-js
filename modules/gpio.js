@@ -13,7 +13,7 @@ function setGpioValue(pin, param, value, runAfter) {
 function initPin(pin, runAfter) {
    	fs.writeFile(gpioPath+"export",pin, function(err){
 		 if (err) throw "Error trying to create the pin "+pin+":"+err;
-		 setGpioValue(pin,"directon","out", runAfter);
+		 setGpioValue(pin,"direction","out", runAfter);
 	});	
 }
 
