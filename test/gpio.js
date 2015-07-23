@@ -13,8 +13,8 @@ describe("GPIO", function() {
      
       it('should initialze the gpio-pin', function(done) {
         app.events.once('changedState', function(arg) {
-          assert.equals("0"  ,gpio.getGpioValue(3,"value")); 
-          assert.equals("out",gpio.getGpioValue(3,"direction")); 
+          assert.equal("0"  ,gpio.getGpioValue(3,"value")); 
+          assert.equal("out",gpio.getGpioValue(3,"direction")); 
           done(); 
         });
         sendEvent(3,true);   // open pin 3
@@ -22,10 +22,10 @@ describe("GPIO", function() {
       
       it('should turn on and off the value the gpio-pin', function(done) {
         app.events.once('changedState', function(arg) {
-          assert.equals("1"  ,gpio.getGpioValue(3,"value")); 
+          assert.equal("1"  ,gpio.getGpioValue(3,"value")); 
           
           app.events.once('changedState', function(arg) {
-             assert.equals("0"  ,gpio.getGpioValue(3,"value")); ;
+             assert.equal("0"  ,gpio.getGpioValue(3,"value")); ;
              done();
           });
           sendEvent(3,true);   // open pin 3
