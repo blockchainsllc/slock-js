@@ -1,18 +1,17 @@
+/// <reference path="../typings/mocha/mocha.d.ts"/>
 var assert = require("assert");
-var core = require('../src/core.js');
+var core   = require('../src/core.js');
 
 describe("GPIO", function() {
-   describe("initialize", function(){
      
       // create app
-      var app  = core ({ modules : { "gpio" : {} } });
-      var gpio = app.modules[0];
+      var gpio  = core ({ modules : { "gpio" : {} } }).modules[0];
       function sendEvent(pin,open) {
-      	app.events.emit("changeState",{ open   : open,	id     : pin,	config : { gpio : pin}, sender : gpio});
+      	gpio.events.emit("changeState",{ open   : open,	id     : pin,	config : { gpio : pin}, sender : gpio});
       }
      
       it('should initialze the gpio-pin', function(done) {
-        app.events.once('changedState', function(arg) {
+        gpio.events.once('changedState', function(arg) {
           assert.equal("0"  ,gpio.getGpioValue(3,"value")); 
           assert.equal("out",gpio.getGpioValue(3,"direction")); 
           done(); 
@@ -21,10 +20,10 @@ describe("GPIO", function() {
       });
       
       it('should turn on and off the value the gpio-pin', function(done) {
-        app.events.once('changedState', function(arg) {
+        gpio.events.once('changedState', function(arg) {
           assert.equal("1"  ,gpio.getGpioValue(3,"value")); 
           
-          app.events.once('changedState', function(arg) {
+          gpio.events.once('changedState', function(arg) {
              assert.equal("0"  ,gpio.getGpioValue(3,"value")); ;
              done();
           });
@@ -33,7 +32,6 @@ describe("GPIO", function() {
         sendEvent(3,false);   // open pin 3
       });
       
-   });
 });
 
 

@@ -1,3 +1,6 @@
+/**
+ * simple Module to write the event to the logger instead executing it.
+ */
 module.exports = function() {
 	this.init = function(arg) {
 	     console.log("Start Debug...");
