@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "main application controlling the slock-device",
   "main": "cryptolock.js",
-  "repository": "",
+  "repository": "https://github.com/slockit/cryptolock-js",
   "dependencies": {
     "events": "~1.0.2",
     "web3": "^0.6.0",
