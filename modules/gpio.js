@@ -38,16 +38,24 @@ function checkPin(pin, runAfter) {
   });
 }
 
+/**
+ * called from the eventbus whenever we receive a event to change the state of a device
+ */
+function changeState(arg) {
+  if (!arg.config.gpio) return;
+  
+  console.log('GPIO : open ' + arg.id + "=" + arg.open);
+  checkPin(arg.config.gpio, function () {
+    setGpioValue(arg.config.gpio, "value", arg.open ? 0 : 1);
+  });
+}
+
+/**
+ * constructor function which registers the changeState-event
+ */
 module.exports = function () {
   this.init = function (arg) {
     console.log("Start GPIO ...");
-    this.events.on('changeState', function (arg) {
-      if (arg.config.gpio) {
-        console.log('GPIO : open ' + arg.id + "=" + arg.open);
-        checkPin(arg.config.gpio, function () {
-          setGpioValue(arg.config.gpio, "value", arg.open ? 0 : 1);
-        });
-      }
-    });
+    arg.events.on('changeState', changeState);
   };
 };
