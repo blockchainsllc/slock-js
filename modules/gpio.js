@@ -1,4 +1,4 @@
-var fs       = require("fs");
+var fs = require("fs");
 var gpioPath = '/sys/class/gpio/';
 
 /**
@@ -48,6 +48,6 @@ module.exports = function () {
           setGpioValue(arg.config.gpio, "value", arg.open ? 0 : 1);
         });
       }
-	   });
+    });
   };
 };
