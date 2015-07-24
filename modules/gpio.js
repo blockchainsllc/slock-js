@@ -1,4 +1,4 @@
-var fs = require("fs");
+var fs       = require("fs");
 var gpioPath = '/sys/class/gpio/';
 
 /**
@@ -12,7 +12,7 @@ function setGpioValue(pin, param, value, runAfter) {
     if (err) throw "Error trying to set the value for " + param + " of pin " + pin + " to " + value + " : " + err;
     console.log("Changed " + param + " of Pin " + pin + " to " + value);
     if (runAfter) runAfter();
-	 });
+  });
 }
 
 /**
@@ -35,9 +35,9 @@ function initPin(pin, runAfter) {
 function checkPin(pin, runAfter) {
   fs.exists(gpioPath + "gpio" + pin + "/value", function (exists) {
     if (exists)
-		    runAfter();
+      runAfter();
     else
-		    initPin(pin, runAfter);
+      initPin(pin, runAfter);
   });
 }
 
@@ -59,7 +59,7 @@ function changeState(arg) {
  * only for tests in order to read the set value.
  */
 function getGpioValue(pin, param) {
-   return fs.readFileSync(gpioPath + "gpio" + pin + "/" + param, "utf8").trim();
+   return fs.readFileSync(gpioPath + "gpio" + pin + "/" + ( param || "value"), "utf8").trim();
 }
 
 
@@ -68,7 +68,7 @@ function getGpioValue(pin, param) {
  */
 module.exports = function () {
   this.getGpioValue = getGpioValue;
-  this.init = function (arg) {
+  this.init         = function (arg) {
     console.log("Start GPIO ...");
     arg.events.on('changeState', changeState);
   };
