@@ -17,6 +17,7 @@
     "run" : "bin/cryptolock.js"
   },
   "dependencies": {
+    "bluetooth-serial-port": "^1.2.4",
     "events": "~1.0.2",
     "web3": "^0.6.0",
     "websocket": "^1.0.19"
