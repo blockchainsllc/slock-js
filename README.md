@@ -11,6 +11,7 @@ Each Module will be created only if used within the config. The key is the filen
 	  }
  
 
+For more details on the different Modules and their config, see [the module-directory](https://github.com/slockit/cryptolock-js/tree/master/modules).
 
 ## Module Creation
 

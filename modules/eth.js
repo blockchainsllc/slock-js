@@ -202,6 +202,20 @@ module.exports = function () {
          c.startWatching();
          contracts.push(c);
       });
+      
+      // add custom command
+      arg.events.emit("adminAddCmd", { 
+         name    : "contracts",
+         comment : "lists all Contracts and their status",
+         fnc     : function() {
+            var result = "all Contracts: \r\n";
+            for (var i = 0; i < contracts.length; i++) {
+               var c = contracts[i];
+               result+=c.id + ": open= "+c.isStateOpen()+ " + user="+c.getCurrentUser()+" \r\n";
+            }
+            return result;
+         }
+      });
 
    }
 };

@@ -5,12 +5,12 @@ var util= require('util');
 
 function API() {
    var self =this;
+   this.events.on("adminAddCmd", function(cmd){
+      API.prototype[cmd.name]=cmd.fnc;
+      if (cmd.comment) API.prototype[cmd.name+"_"]=cmd.comment;
+   });
+   
    this.init=function(arg) {
-      arg.events.on("adminAddCmd", function(cmd){
-         API.prototype[cmd.name]=cmd.fnc;
-         if (cmd.comment) API.prototype[cmd.name+"_"]=cmd.comment;
-      });
-
       arg.events.on("adminCmd", function(cmd){
          console.log("Admin CMD : "+cmd.name + " "+JSON.stringify({params: cmd.params}));
          
