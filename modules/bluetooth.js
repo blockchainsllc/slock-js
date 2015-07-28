@@ -3,6 +3,10 @@ var cp  = require('child_process');
 var rl  = require('readline');
 
 var timeout = 500;
+var rfcom   = null;
+var exitMode=false;
+
+
 /**
  * Registers a bluetooth-serial port in order to send and receive admin-events
  * 
@@ -24,6 +28,11 @@ function waitForDiconnect(file, cb) {
      else        setTimeout(function(){waitForDiconnect(file,cb);}, timeout);
   });
 }
+// registers a function to be executed as soon as the file exists.
+function cleanUpOldConnection(file, cb) {
+   exitMode=true;
+   cp.exec("killall rfcomm", cb);
+}
 
 
 // open the given Serial Port on the Bluettooth-device
@@ -33,34 +42,36 @@ function openPort(channel, device, events) {
          console.log(" Error trying to open the bluetooth port " + error + "\n" + stderr+ "\n" +stdout);
          return;
       }
-      
-      var rfcom = cp.spawn ( "/usr/bin/rfcomm", ['watch',device,channel], {stdio:'inherit'});
-      rfcom.on('close', function (code) {
-         setTimeout(function(){
-            console.log('connection closed, reopen the port.... ' + channel);
-            openPort(channel, device, events);
-         },500);
+      cleanUpOldConnection(device, function(){
+         exitMode=false;
+         rfcom = cp.spawn ( "/usr/bin/rfcomm", ['watch',device,channel], {stdio:'inherit'});
+         rfcom.on('close', function (code) {
+            rfcom = null;
+            if (!exitMode) setTimeout(function(){
+               console.log('connection closed, reopen the port.... ' + channel);
+               openPort(channel, device, events);
+            },500);
+         });
+         
+         function startSession(){
+              events.emit("adminMsg",{ msg:"Connection to Slock established! Enter 'help' to get all commands!"});
+              
+              var session = rl.createInterface({  input : fs.createReadStream(device),  output: process.stdout  }); 
+              session.on("line",function(cmd) {
+                 var tokens = cmd.trim().split(" ");
+                 if (tokens.length>0 && tokens[0].trim().length>0) 
+                    events.emit("adminCmd",{name:tokens.shift(), params: tokens});
+              });
+              
+              waitForDiconnect(device, function(){
+                 console.log("diconnected session");   
+                  try { session.close(); } catch(err) { console.log(err); }
+                  waitForConnect(device, startSession);
+              });
+                       
+         }
+         waitForConnect(device, startSession);
       });
-      
-      
-      function startSession(){
-           events.emit("adminMsg",{ msg:"Connection to Slock established! Enter 'help' to get all commands!"});
-           
-           var session = rl.createInterface({  input : fs.createReadStream(device),  output: process.stdout  }); 
-           session.on("line",function(cmd) {
-              var tokens = cmd.trim().split(" ");
-              if (tokens.length>0 && tokens[0].trim().length>0) 
-                 events.emit("adminCmd",{name:tokens.shift(), params: tokens});
-           });
-           
-           waitForDiconnect(device, function(){
-              console.log("diconnected session");   
-               try { session.close(); } catch(err) { console.log(err); }
-               waitForConnect(device, startSession);
-           });
-                    
-      }
-      waitForConnect(device, startSession);
    });
 }
 
@@ -83,4 +94,16 @@ module.exports = function() {
         });
       }); 
    };
+   
+   
+   function cleanup() {
+      exitMode = true;
+      if (rfcom && rfcom.connected) rfcom.kill('SIGHUP');
+      rfcom=null;
+      process.exit();
+   }
+      
+   process.on('SIGINT' , cleanup);      
+   process.on('SIGQUIT', cleanup);      
+   this.events.on("exit",cleanup);
 }

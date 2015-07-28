@@ -4,13 +4,8 @@ core ({
 		  "eth" : {
 			  "client"   : "slock.me:8545",
 			  "contracts" : {
-				  "doorlock4" : {
-					  adr          : "0xf3aa347db02979c366887b01a94e3cafa2b3664c",
-					  useStorage   : false,
-					  useMessage   : true
-				  },
 				  "switch" : {
-					  adr          : "0xd463562e37cf461411e16b2f7d945b8ddae2bda9",
+					  adr          : "0xf98dc8f7b740967104f30157f0dcee2bf62493e2",
 					  useStorage   : false,
 					  useMessage   : true
 				  }
@@ -18,7 +13,7 @@ core ({
 			  
 		  },
 		  "websocket" : {
-			  host : "127.0.0.1",
+			  host : "slock.me",
 			  port : 8080
 		  },
 		  "debug" : {}

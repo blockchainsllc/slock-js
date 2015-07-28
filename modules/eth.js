@@ -54,9 +54,11 @@ Contract.prototype = {
     */
    checkEvent : function (isOpen, result, err) {
       if (err) {
-         console.log("Error with " + this.id + " :" + err);
-         if (this.config.stopOnError && ("" + err).indexOf("INVALID_PARAMS") >= 0)
+         console.log("eth: Error with " + this.id + " :" + err);
+         if (this.config.stopOnError && ("" + err).indexOf("INVALID_PARAMS") >= 0) {
+            this.events.emit("exit",this);
             process.exit(1);
+         }
          return;
       }
 
@@ -137,7 +139,7 @@ Contract.prototype = {
       var _ = this;
       if (this.config.useStorage)
          this.timer = setInterval(function () { _.checkStorage(); }, (this.config.interval || 1) * 1000);
-      else {
+      else if (!this.config.ignoreEvents) {
          this.openEvent  = this.contract.Open();
          this.closeEvent = this.contract.Close();
          this.openEvent.watch (function (err, result) {  _.checkEvent(true, result, err);   });
@@ -214,6 +216,35 @@ module.exports = function () {
                result+=c.id + ": open= "+c.isStateOpen()+ " + user="+c.getCurrentUser()+" \r\n";
             }
             return result;
+         }
+      });
+
+      // add custom command
+      arg.events.emit("adminAddCmd", { 
+         name    : "set",
+         comment : "sets the status of a contract: set <DEV> open/close {force}",
+         fnc     : function(id,value, force) {
+            for (var i = 0; i < contracts.length; i++) {
+               var c = contracts[i];
+               if (c.id==id) {
+                  if (force) 
+                     arg.events.emit("changeState", {
+                        open : value.indexOf("open")>=0,
+                        id : id,
+                        config : c.config,
+                        sender : this
+                     });
+                 else
+                     arg.events.emit("message", {
+                          to     : c.config.adr,
+                          "from" : c.getCurrentUser(),
+                           msg   : value
+                     });
+                  return "sent "+value+" event to "+id;
+               }
+            }
+            
+            return id+" not found in contracts. See available contracts with 'contracts'";
          }
       });
 
