@@ -72,4 +72,36 @@ The Object passed as argument will give you the following properties:
 -	   <b>to</b> : the adress of the receiver
 - 	 <b>msg</b> : the text or message
 
+### Events from the admin-Module
+
+
+#### "adminMsg" - Event
+
+sending a adminMsg-Event will cause the receiver to deliver the message to the admin.
+
+The Object passed as argument will give you the following properties:
+- 	 <b>msg</b> : the message to be delivered
+-	 <b>cmd</b> : the command-object (optional)
+
+#### "adminCmd" - Event
+
+sending a adminCmd-Event will cause the admin-Module (if loaded) to execute this cmd.
+
+The Object passed as argument will give you the following properties:
+
+- 	 <b>name</b> : the command to execute
+-	 <b>params</b> : the parameters to use as Array
+
+#### "adminAddCmd" - Event
+
+sending a adminCmd-Event will cause the admin-Module (if loaded) to add another command
+
+The Object passed as argument will give you the following properties:
+
+- 	 <b>name</b> : the command name
+-	 <b>fnc</b> : a function to be executed
+-	 <b>comment</b> : a comment to be shown if help is called
+
+
+
 

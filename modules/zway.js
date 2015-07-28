@@ -1,20 +1,19 @@
 var http = require('http');
 
-function Zway() {}
-Zway.prototype = {
+module.exports = function() {
 		
-   init : function(arg) {
-	 var config = arg.config.modules.zway;
+   this.init = function(arg) {
+	  var config = arg.config.modules.zway;
      console.log("Init zway-connection ...");
      
-	 var host = config.host || 'localhost';
-	 var port = config.port || 8083;
+	  var host = config.host || 'localhost';
+	  var port = config.port || 8083;
 	 
      this.events.on('changeState',function(arg) {
     	 var conf = arg.config;
     	 var vOn  = conf.open || 0;
     	 var vOff = conf.close || 255;
-         console.log('Zway : open '+arg.id+"="+arg.open);
+       console.log('Zway : open '+arg.id+"="+arg.open);
     	 if (conf.nodeid) {
              var url = "http://"+host+":"+port+"/ZWaveAPI/Run/devices["+conf.nodeid+"].instances["+(conf.instance || 0)+"].commandClasses["+(conf.command || 98)+"].Set("+(arg.open?vOn:vOff)+")";
              console.log('Zway : open '+arg.id+"="+arg.open + " url:"+url);
@@ -26,8 +25,5 @@ Zway.prototype = {
            	});
     	 }
      });
-
-     
-   }
+   };
 };
-module.exports = Zway;
