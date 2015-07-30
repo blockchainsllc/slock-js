@@ -101,6 +101,7 @@ var api = API.prototype = {
 
    sh_ : "executes a comand on the shell",
    sh  : function(cmd){
+      var self=this;
       this.exec( Array.prototype.slice.call(arguments).join(' '), function(std,err) {
          self.events.emit("adminMsg", {msg:std+err});
       });
