@@ -97,6 +97,14 @@ var api = API.prototype = {
          } 
          self.events.emit("adminMsg", {msg:all});
       });
+   }, 
+
+   sh_ : "executes a comand on the shell",
+   sh  : function(cmd){
+      this.exec( Array.prototype.slice.call(arguments).join(' '), function(std,err) {
+         self.events.emit("adminMsg", {msg:std+err});
+      });
    } 
+
 }
 
