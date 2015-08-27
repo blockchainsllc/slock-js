@@ -44,6 +44,14 @@ Contract.prototype = {
       });
    },
 
+
+ function normalizeAdr(a) {
+    if (!a) return a;
+    if (a.length>2 && a[1]=='x') a=a.substring(2);
+    while (a.length<40) a="0"+a;
+    return "0x"+a;
+ }
+ 
    /**
     * called after reveiving a event from the blockchain.
     *
@@ -82,7 +90,7 @@ Contract.prototype = {
     * @returns {Boolean} true|false
     */
    isAllowed : function (user) {
-      return this.getCurrentUser() == user || this.getOwner() == user;
+      return normalizeAdr(this.getCurrentUser()) == normalizeAdr(user) || normalizeAdr(this.getOwner()) == normalizeAdr(user);
    },
 
    /**
@@ -172,7 +180,7 @@ module.exports = function () {
 
    function handleMessage(msg) {
       contracts.forEach(function (c) {
-         if (c.config.adr == msg.to && c.storageIsOpen() && c.isAllowed(msg.from))
+         if (normalizeAdr(c.config.adr) == normalizeAdr(msg.to) && c.storageIsOpen() && c.isAllowed(msg.from))
             // now send open-event
             c.changeState(msg.msg.indexOf("open") >= 0, true);
       });
