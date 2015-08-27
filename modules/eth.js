@@ -1,4 +1,14 @@
 /// <reference path="../typings/node/node.d.ts"/>
+
+ function normalizeAdr(a) {
+    if (!a) return a;
+    if (a.length>2 && a[1]=='x') a=a.substring(2);
+    while (a.length<40) a="0"+a;
+    return "0x"+a;
+ }
+ 
+
+
 /**
  * a contract which represents a smartContract
  * in the blockchain connected to a device
@@ -44,14 +54,6 @@ Contract.prototype = {
       });
    },
 
-
- function normalizeAdr(a) {
-    if (!a) return a;
-    if (a.length>2 && a[1]=='x') a=a.substring(2);
-    while (a.length<40) a="0"+a;
-    return "0x"+a;
- }
- 
    /**
     * called after reveiving a event from the blockchain.
     *
