@@ -7,7 +7,7 @@ So the worst case if forgetting to include a module might be, that nobody handle
 ## admin
 
 This Module holds a API with commands that can be called in order to configure the slock-system. 
-It will react to the [commands](https://github.com/slockit/cryptolock-js#admincmd---event) and execute them.
+It will react to the [commands](https://github.com/slockit/slock-js#admincmd---event) and execute them.
 Adding a custom-Command in your module:
 
       // add custom command
