@@ -1,5 +1,5 @@
 [Unit]
-Description=ethereum cryptolock service
+Description=ethereum slock service
 Requires=network.target
 After=network.target
 
@@ -9,8 +9,8 @@ WantedBy=multi-user.target
 [Service]
 StandardOutput=syslog
 StandardError=syslog
-SyslogIdentifier=cryptolock
+SyslogIdentifier=slock
 Restart=always
 KillMode=process
-ExecStart=/usr/bin/node /opt/cryptolock-js/bin/cryptolock.js
-WorkingDirectory=/opt/cryptolock-js/bin
+ExecStart=/usr/bin/node /opt/slock-js/bin/slock.js
+WorkingDirectory=/opt/slock-js/bin

@@ -1,5 +1,5 @@
-# cryptolock-js
-the backend of the cryptolockframework
+# slock-js
+the backend of the slock framework
 
 ## Module-Configuration
 
@@ -11,7 +11,7 @@ Each Module will be created only if used within the config. The key is the filen
 	  }
  
 
-For more details on the different Modules and their config, see [the module-directory](https://github.com/slockit/cryptolock-js/tree/master/modules).
+For more details on the different Modules and their config, see [the module-directory](https://github.com/slockit/slock-js/tree/master/modules).
 
 ## Module Creation
 

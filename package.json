@@ -1,20 +1,20 @@
 {
-  "name": "cryptolock",
+  "name": "slock",
   "version": "0.1.0",
   "description": "main application controlling the slock-device",
   "homepage": "http://slock.it",
-  "main": "cryptolock.js",
+  "main": "slock.js",
   "bugs": {
-    "url"   : "https://github.com/slockit/cryptolock-js/issues",
-    "email" : "simon@jentzschfamily.net" 
+    "url"   : "https://github.com/slockit/slock-js/issues",
+    "email" : "simon.jentzsch@slock.it" 
   },
   "repository": {
      "type" : "git",
-     "url"  : "https://github.com/slockit/cryptolock-js" 
+     "url"  : "https://github.com/slockit/slock-js" 
   },
   "scripts": {
     "test": "mocha",
-    "run" : "bin/cryptolock.js"
+    "run" : "bin/slock.js"
   },
   "dependencies": {
     "events": "~1.0.2",
