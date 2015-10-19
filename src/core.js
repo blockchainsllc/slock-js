@@ -1,35 +1,49 @@
-module.exports = function(configData) {
+var fs           = require('fs');
+var join         = require('path').join;
+var EventEmitter = require("events").EventEmitter;
 
-	var EventEmitter = require("events").EventEmitter;
-	
-	// create main-object
-	var main = {
+// helper functions
+function loadModule(paths, moduleName) {
+   var path = null;
+   (paths||[]).concat(['../modules/']).forEach(function(p){
+      try { if (!path && fs.accessSync(join(p,moduleName),fs.R_OK ))       path = join(p,moduleName); } catch (ex){}
+      try { if (!path && fs.accessSync(join(p,moduleName)+".js"),fs.R_OK ) path = join(p,moduleName)+".js"; } catch (ex){}
+   });
+   
+   return require(path || moduleName);
+}
+
+// export the function to create the app
+module.exports = function(configData) {
+   
+	// create app-object
+	var app = {
 	   events : new EventEmitter(),
 	   config : configData,
 	   modules: [],
 	};
 
 	// create modules
-	Object.keys(main.config.modules).forEach(function(module) {
-		
+	Object.keys(app.config.modules).forEach(function(module) {
+      
 		//load  module
-	    var ModuleClass = require('../modules/'+module+".js");
+	   var ModuleClass = loadModule(configData.modulePaths, module);
 	    
 	    // assign the prototype, so we can use events and config within the constructor
-		ModuleClass.prototype.__proto__=main;
+		ModuleClass.prototype.__proto__=app;
 		console.log("loading module "+module);
 		
 		// instance
 		var m = new ModuleClass();
 		
 		// register the init-method
-		if (m.init) main.events.on("init",function() { m.init(main); });
+		if (m.init) app.events.on("init",function() { m.init(app); });
 		
-		main.modules.push(m);
+		app.modules.push(m);
 	});
 
 	// init all Modules
-	main.events.emit("init",main);
+	app.events.emit("init",app);
 	
-	return main;
+	return app;
 };
