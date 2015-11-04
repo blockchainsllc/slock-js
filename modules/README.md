@@ -1,7 +1,7 @@
 # Module
 
 Each Module as describes in this folders can be configured seperatly and has no direct dependency. 
-The Exchange of Data between the modules only works by sending events on the mein-event-bus. 
+The Exchange of Data between the modules only works by sending events on the main-event-bus. 
 So the worst case if forgetting to include a module might be, that nobody handles the event and nothng happens. 
 
 ## admin
