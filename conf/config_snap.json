@@ -1,0 +1,29 @@
+{
+    "modules" : {
+		  "eth" : {
+			  "client"   : "slock.it:8545",
+			  "contracts" : {
+				  "doorlock4" : {
+					  "adr"        : "0x87bb217883541a312fac2977c2a744219963586f",
+					  "useStorage" : false,
+					  "nodeid"     : 4,
+					  "command"    : 98,
+					  "open"       : 0,
+					  "close"      : 255,
+					  "stopOnError": true,
+					  "gpio"       : 3
+				  },
+				  "switch" : {
+					  "adr"        : "0xd463562e37cf461411e16b2f7d945b8ddae2bda9",
+					  "useStorage" : false,
+					  "nodeid"     : 2,
+					  "stopOnError": true,
+					  "gpio"       : 4
+				  }
+			  }  
+			  
+		  },
+		  "debug" : {},
+		  "gpio"  : {}
+    }                 
+}
