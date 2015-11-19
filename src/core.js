@@ -5,9 +5,9 @@ var EventEmitter = require("events").EventEmitter;
 // helper functions
 function loadModule(paths, moduleName) {
    var path = null;
-   (paths||[]).concat(['../modules/']).forEach(function(p){
-      try { if (!path && fs.accessSync(join(p,moduleName),fs.R_OK ))       path = join(p,moduleName); } catch (ex){}
-      try { if (!path && fs.accessSync(join(p,moduleName)+".js"),fs.R_OK ) path = join(p,moduleName)+".js"; } catch (ex){}
+   (paths||[]).concat(['../modules/','./lib/node_modules/slock/modules/']).forEach(function(p){
+      try { if (!path && fs.accessSync(join(p,moduleName),fs.R_OK ))       path = join(p,moduleName);       } catch (ex){}
+      try { if (!path && fs.accessSync(join(p,moduleName)+".js",fs.R_OK))  path = join(p,moduleName)+".js"; } catch (ex){}
    });
    
    return require(path || moduleName);
