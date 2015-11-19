@@ -1,16 +1,13 @@
 var fs           = require('fs');
-var join         = require('path').join;
 var EventEmitter = require("events").EventEmitter;
 
 // helper functions
 function loadModule(paths, moduleName) {
-   var path = null;
+   var res = null;
    (paths||[]).concat(['../modules/','./lib/node_modules/slock/modules/']).forEach(function(p){
-      try { if (!path && fs.accessSync(join(p,moduleName),fs.R_OK ))       path = join(p,moduleName);       } catch (ex){}
-      try { if (!path && fs.accessSync(join(p,moduleName)+".js",fs.R_OK))  path = join(p,moduleName)+".js"; } catch (ex){}
+      try { res = res || require(p+moduleName+".js");  }  catch (ex){}
    });
-   
-   return require(path || moduleName);
+   return res || require(moduleName);
 }
 
 // export the function to create the app
