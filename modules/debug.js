@@ -7,5 +7,8 @@ module.exports = function() {
 	     this.events.on('changeState',function(arg) {
 	         console.log('Debug : open '+arg.id+"="+arg.open);
 	     });
+	     this.events.on('message',function(m) {
+	         console.log('Debug : message '+JSON.stringify(m));
+	     });
 	};
 };

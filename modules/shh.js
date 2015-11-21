@@ -18,9 +18,10 @@ module.exports = function () {
       var web3       = contract.web3;
       
       // watch for incoming messages
-      web3.shh.watch({ 
-         'topic': [ normalizeAdr(contract.config.adr) ] 
-      }).arrived(function(m) {
+      web3.shh.filter({ 
+         // remove the web3.fromAscii if it is fixed!
+         'topics': [ web3.fromAscii(normalizeAdr(contract.config.adr)) ] 
+      }).watch(function(error,m) {
          events.emit("message", { to: normalizeAdr(contract.config.adr), msg: web3.toAscii(m.payload[0]), from:m.payload[1] });
       });
       
