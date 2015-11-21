@@ -1,30 +1,27 @@
 /// <reference path="../typings/node/node.d.ts"/>
 
- function normalizeAdr(a) {
-    if (!a) return a;
-    if (a.length>2 && a[1]=='x') a=a.substring(2);
-    while (a.length<40) a="0"+a;
-    return "0x"+a;
- }
+function normalizeAdr(a) {
+   if (!a) return a;
+   if (a.length>2 && a[1]=='x') a=a.substring(2);
+   while (a.length<40) a="0"+a;
+   return "0x"+a;
+}
  
-
+var Web3 = require('web3');
 
 /**
  * a contract which represents a smartContract
  * in the blockchain connected to a device
  */
 function Contract(id, config, events, web3) {
-   this.config = config;
-   this.id     = id;
-   this.events = events;
-   this.web3   = web3;
-
-   // read the Defintion from Blockchain
-  var contractDef = web3.eth.contract([
+  this.config   = config;
+  this.id       = id;
+  this.events   = events;
+  this.web3     = web3;
+  this.contract = web3.eth.contract([
     { name: 'Open' , type: 'event', inputs: [], outputs: [] },
     { name: 'Close', type: 'event', inputs: [], outputs: [] },
-  ]);
-  this.contract = contractDef.at(config.adr);
+  ]).at(config.adr);
 }
 
 Contract.prototype = {
@@ -203,7 +200,7 @@ module.exports = function () {
       contracts.length = 0;
 
       // init the provider
-      var web3 = this.web3 = this.web3 || require('web3'),
+      var web3 = this.web3 = this.web3 || new Web3();
       events = this.events;
       if (!arg.oldConfig || config.client != arg.oldConfig.modules.eth.client)
          web3.setProvider(new web3.providers.HttpProvider('http://' + config.client));

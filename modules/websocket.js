@@ -45,7 +45,9 @@ module.exports = function () {
             connection.on('message', function (message) {
                if (message.type === 'utf8') {
                   console.log(id + " Received: '" + message.utf8Data + "'");
-                  events.emit("message", JSON.parse(message.utf8Data));
+                  var msg = JSON.parse(message.utf8Data);
+                  // TODO now validate the signed message
+                  events.emit("message", msg);
                }
             });
 				
