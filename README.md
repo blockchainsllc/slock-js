@@ -48,7 +48,8 @@ This Event will be triggered if the eth-Module starts watching for the open/clos
 The object passed as argument will give you the following properties:
 
 - 	 <b>config</b> : the Configuration of the contractr as read from config. config.adr will hold the contract-adress.
--	   <b>id</b> : the id (or key within the config)
+-	 <b>id</b> : the id (or key within the config)
+-	 <b>web3</b> : the web3-object used for communicating with the eth-client.
 
 
 #### "changeState"-Event
