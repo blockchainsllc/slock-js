@@ -23,9 +23,8 @@
   },
   "devDependencies": {},
   "keywords": [
-    "node.js",
-    "eclipse",
-    "nodeclipse"
+    "ethereum",
+    "slock"
   ],
   "author": "slockt.it",
   "license": "MIT"
