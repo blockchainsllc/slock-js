@@ -1,13 +1,7 @@
 /// <reference path="../typings/node/node.d.ts"/>
 
-function normalizeAdr(a) {
-   if (!a) return a;
-   if (a.length>2 && a[1]=='x') a=a.substring(2);
-   while (a.length<40) a="0"+a;
-   return "0x"+a;
-}
- 
-var Web3 = require('web3');
+var Web3  = require('web3');
+var utils = require('../src/utils.js');
 
 /**
  * a contract which represents a smartContract
@@ -89,7 +83,7 @@ Contract.prototype = {
     * @returns {Boolean} true|false
     */
    isAllowed : function (user) {
-      return normalizeAdr(this.getCurrentUser()) == normalizeAdr(user) || normalizeAdr(this.getOwner()) == normalizeAdr(user);
+      return utils.normalizeAdr(this.getCurrentUser()) == utils.normalizeAdr(user) || utils.normalizeAdr(this.getOwner()) == utils.normalizeAdr(user);
    },
 
    /**
@@ -179,7 +173,7 @@ module.exports = function () {
 
    function handleMessage(msg) {
       contracts.forEach(function (c) {
-         if (normalizeAdr(c.config.adr) == normalizeAdr(msg.to) && c.storageIsOpen() && c.isAllowed(msg.from))
+         if (utils.normalizeAdr(c.config.adr) == utils.normalizeAdr(msg.to) && c.storageIsOpen() && c.isAllowed(msg.from))
             // now send open-event
             c.changeState(msg.msg.indexOf("open") >= 0, true);
       });
@@ -201,7 +195,7 @@ module.exports = function () {
 
       // init the provider
       var web3 = this.web3 = this.web3 || new Web3();
-      events = this.events;
+      var events = this.events;
       if (!arg.oldConfig || config.client != arg.oldConfig.modules.eth.client)
          web3.setProvider(new web3.providers.HttpProvider('http://' + config.client));
 
