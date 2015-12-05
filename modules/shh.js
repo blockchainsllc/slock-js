@@ -1,5 +1,8 @@
 var utils = require('../src/utils.js');
 
+// 
+// this modules receives shh (whisper)-messages in order to send events.
+// 
 
 module.exports = function () {
 
