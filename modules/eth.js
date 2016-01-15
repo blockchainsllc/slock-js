@@ -3,6 +3,14 @@
 var Web3  = require('web3');
 var utils = require('../src/utils.js');
 
+
+function createProvider(web3, client) {
+  if (client.indexOf(':')>0)
+    return new web3.providers.HttpProvider('http://' + client);
+  else
+    return new web3.providers.IpcProvider(client, require('net'));
+}
+
 /**
  * a contract which represents a smartContract
  * in the blockchain connected to a device
@@ -179,6 +187,8 @@ module.exports = function () {
       });
    }
 
+  
+
    /**
     * initialze or entry-function of the module
     */
@@ -197,7 +207,7 @@ module.exports = function () {
       var web3 = this.web3 = this.web3 || new Web3();
       var events = this.events;
       if (!arg.oldConfig || config.client != arg.oldConfig.modules.eth.client)
-         web3.setProvider(new web3.providers.HttpProvider('http://' + config.client));
+         web3.setProvider(createProvider(web3,config.client));
 
       // init the contracts
       Object.keys(config.contracts).forEach(function (cid) {
