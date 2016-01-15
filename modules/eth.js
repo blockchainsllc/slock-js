@@ -5,10 +5,9 @@ var utils = require('../src/utils.js');
 
 
 function createProvider(web3, client) {
-  if (client.indexOf(':')>0)
-    return new web3.providers.HttpProvider('http://' + client);
-  else
-    return new web3.providers.IpcProvider(client, require('net'));
+  return client.indexOf(':')>0
+    ? new web3.providers.HttpProvider('http://' + client)
+    : new web3.providers.IpcProvider(client, require('net'));
 }
 
 /**
