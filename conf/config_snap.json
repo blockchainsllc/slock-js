@@ -1,7 +1,7 @@
 {
     "modules" : {
 		  "eth" : {
-			  "client"   : "slock.it:8545",
+			  "client"   : "/root/.ethereum/ipc.geth",
 			  "contracts" : {
 				  "doorlock4" : {
 					  "adr"        : "0x87bb217883541a312fac2977c2a744219963586f",
