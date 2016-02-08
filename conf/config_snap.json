@@ -27,6 +27,10 @@
 	"zway" : {
 	    "host" : "localhost",
 	    "port" : 8083
+	},
+	"websocket" : {
+	    "host" : "slock.it",
+	    "port" : 8080
 	}
     }
 }
