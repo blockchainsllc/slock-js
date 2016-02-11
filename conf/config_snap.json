@@ -1,7 +1,7 @@
 {
     "modules" : {
 	"eth" : {
-	    "client"   : "/var/lib/apps/ethereum/current/.ethereum/geth.ipc",
+	    "client"   : "/root/.ethereum/geth.ipc",
 	    "contracts" : {
 		"doorlock4" : {
 		    "adr"        : "0xdf373f3dab2561668e239ca6e43a8c6aaeb3f825",
