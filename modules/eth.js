@@ -102,20 +102,41 @@ Contract.prototype = {
       return open !== "0x" && open !== "0x0";
    },
 
+    /**
+     * Asynchronous blocking call for getStorageAt. Really ugly.
+     * Needed as asynchronous call by the IPC provider. TODO: Fix and adjust logic better.
+     */
+    ourGetStorageAt : function (addr, pos) {
+        var done = false;
+        var storage  = 0;
+        this.web3.eth.getStorageAt(addr, pos, this.web3.eth.defaultBlock, function (error, result) {
+            if (error) {
+                console.log(error);
+                return;
+            }
+            done = true;
+            storage = result;
+        });
+        while (!done) {
+            console.log("busy waiting!");
+        };
+        return storage;
+    },
+
    /**
     * returns the storage-value of the open-flag
     * @returns
     */
-   storageIsOpen : function () {
-      return this.web3.eth.getStorageAt(this.config.adr, 4);
-   },
+    storageIsOpen : function () {
+        return this.ourGetStorageAt(this.config.adr, 4)
+    },
 
    /**
     * returns the current user of the contract
     * @returns
     */
    getCurrentUser : function () {
-      return this.web3.eth.getStorageAt(this.config.adr, 3);
+       return this.ourGetStorageAt(this.config.adr, 3);
    },
 
    /**
@@ -123,7 +144,7 @@ Contract.prototype = {
     * @returns
     */
    getOwner : function () {
-      return this.web3.eth.getStorageAt(this.config.adr, 0);
+       return this.ourGetStorageAt(this.config.adr, 0);
    },
 
    /**
