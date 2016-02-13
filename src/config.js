@@ -22,7 +22,7 @@ Config.start = function(configFile) {
 					conf = JSON.parse(data);
 				} catch (e) {
 					if (!count || count<5)
-						setTimeout(function(){fs.readFile(configFile,'utf-8', function(a1,a2) {reinit(a1,a2,(count||0)+1)});},500);
+						setTimeout(function(){fs.readFile(configFile,'utf-8', function(a1,a2) {reinit(a1,a2,(count||0)+1);});},500);
 					else
 					   console.log("Error trying to update from the config "+configFile);
 					return;
