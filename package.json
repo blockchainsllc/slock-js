@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "events": "~1.0.2",
-    "web3": "^0.15.1",
+    "web3": "git://github.com/slockit/web3.js.git",
     "websocket": "^1.0.19"
   },
   "devDependencies": {},

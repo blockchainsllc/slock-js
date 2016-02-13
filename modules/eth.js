@@ -3,6 +3,7 @@
 var Web3  = require('web3');
 var utils = require('../src/utils.js');
 
+
 function createProvider(web3, client) {
   return client.indexOf(':')>0
     ? new web3.providers.HttpProvider('http://' + client)
@@ -22,18 +23,41 @@ function Contract(id, config, events, web3) {
     { name: 'Open' , type: 'event', inputs: [], outputs: [] },
     { name: 'Close', type: 'event', inputs: [], outputs: [] },
   ]).at(config.adr);
+  this.storage = {};
 }
 
 Contract.prototype = {
-    config     : {},   // the config from "contracts" in the config.js
-    id         : "",   // the key from the "contracts"
-    lastOpen   : "",   // remember the last state
-    events     : null, // the event-emitter
-    contract   : null, // the contract-object in the blockchain
-    lastNumber : 0,    // the last number of the event received in order to filter already handled
-    currentUser : 0,
-    storageIsOpen : 0,
-    owner: 0,
+   config     : {},   // the config from "contracts" in the config.js
+   id         : "",   // the key from the "contracts"
+   lastOpen   : "",   // remember the last state
+   events     : null, // the event-emitter
+   contract   : null, // the contract-object in the blockchain
+   lastNumber : 0,    // the last number of the event received in order to filter already handled.
+
+   updateStorage : function(callback) {
+        var batch = this.web3.createBatch(), resCount= 0, maxCount=0, _=this;
+        function addValue(name, index) {
+            maxCount+=1;
+            batch.add( _.web3.eth.getStorageAt.request(_.config.adr,index,'latest',function(error,val){
+               if (error)
+                  console.log("Could not get the value for "+name+" for contract "+_.config.adr);
+               else {
+                  resCount+=1;
+                  _.storage[name]= val;
+                  if (maxCount==resCount && callback) callback.call(_); 
+               }
+             }));
+         }
+
+         addValue('owner'    , 0);
+         addValue('deposite' , 1);
+         addValue('price'    , 2);
+         addValue('user'     , 3);
+         addValue('open'     , 4);
+         addValue('openTime' , 5);
+         addValue('timeBlock', 7);
+         batch.execute();
+   },
 
 
    /**
@@ -76,7 +100,7 @@ Contract.prototype = {
       // check last hash (if it is the same event)
       var hash = result.event + "#" + result.hash;
       if (this.lastHash === hash)     return;
-
+      
       this.lastHash   = hash;
       this.lastNumber = result.number;
 
@@ -88,74 +112,61 @@ Contract.prototype = {
    },
 
    /**
+    * checks if the user sent the message is the one registered or the owner
+    * @param user the user
+    * @returns {Boolean} true|false
+    */
+   isAllowed : function (user) {
+      return utils.normalizeAdr(this.getCurrentUser()) == utils.normalizeAdr(user) || utils.normalizeAdr(this.getOwner()) == utils.normalizeAdr(user);
+   },
+
+   /**
+    * checks if the current State in the contract is marked as open
+    * @returns {Boolean}
+    */
+   isStateOpen : function () {
+      var open = this.storageIsOpen();
+      return open !== "0x" && open !== "0x0";
+   },
+
+   /**
     * returns the storage-value of the open-flag
     * @returns
     */
-    getStorageIsOpen : function (callback) {
-        this.web3.eth.getStorageAt(
-            this.config.adr,
-            4,
-            this.web3.eth.defaultBlock,
-            function (error, result) {
-                if (error) {
-                    console.log("Error at getStorageIsOpen(): " + error);
-                    return;
-                }
-                this.storageIsOpen = result;
-                callback();
-            });
-    },
-
-   /**
-    * returns the current user of the contract
-    * @returns
-    */
-   getCurrentUser : function (callback) {
-       this.web3.eth.getStorageAt(
-           this.config.adr,
-           3,
-           this.web3.eth.defaultBlock,
-           function (error, result) {
-               if (error) {
-                   console.log("Error at getCurrentUser(): " + error);
-                   return;
-               }
-               this.currentUser = result;
-               callback();
-           });
+   storageIsOpen : function () {
+      return this.storage.open;
    },
 
    /**
     * returns the current user of the contract
     * @returns
     */
-   getOwner : function (callback) {
-       this.web3.eth.getStorageAt(
-           this.config.adr,
-           3,
-           this.web3.eth.defaultBlock,
-           function (error, result) {
-               if (error) {
-                   console.log("Error at getOwner(): " + error);
-                   return;
-               }
-               this.owner = result;
-               callback();
-           });
+   getCurrentUser : function () {
+       return this.storage.user;
+   },
+
+   /**
+    * returns the current user of the contract
+    * @returns
+    */
+   getOwner : function () {
+      return this.storage.owner;
    },
 
    /**
     * reads the storage value and compares it to the last.
     * If it changed, it will trigger changeState
     */
-    checkStorage : function () {
-        this.getStorageIsOpen(function () {
-            if (this.storageIsOpen !== this.lastOpen) {
-                this.lastOpen = this.storageIsOpen;
-                this.changeState(this.storageIsOpen !== "0x" && this.storageIsOpen !== "0x0");
-            }
-        });
-    },
+   checkStorage : function () {
+      this.updateStorage(function() {
+         // read openCount
+         var open = this.storageIsOpen();
+         if (open !== this.lastOpen) {
+            this.lastOpen = open;
+            this.changeState(open !== "0x" && open !== "0x0");
+         }
+      });
+   },
 
    /**
     * starts the polling-threads depending on the config
@@ -163,16 +174,19 @@ Contract.prototype = {
    startWatching : function () {
       console.log("start watching " + this.id);
       var _ = this;
-      if (this.config.useStorage)
-         this.timer = setInterval(function () { _.checkStorage(); }, (this.config.interval || 1) * 1000);
-      else if (!this.config.ignoreEvents) {
-         this.openEvent  = this.contract.Open();
-         this.closeEvent = this.contract.Close();
-         this.openEvent.watch (function (err, result) {  _.checkEvent(true, result, err);   });
-         this.closeEvent.watch(function (err, result) {  _.checkEvent(false, result, err);  });
-      }
-
-      this.events.emit("watchContract", this);
+      _.updateStorage(function(){
+        if (this.config.useStorage)
+          this.timer = setInterval(function () { _.checkStorage(); }, (this.config.interval || 1) * 1000);
+        else if (!this.config.ignoreEvents) {
+          this.openEvent  = this.contract.Open();
+          this.closeEvent = this.contract.Close();
+          this.openEvent.watch (function (err, result) {  _.checkEvent(true, result, err);   });
+          this.closeEvent.watch(function (err, result) {  _.checkEvent(false, result, err);  });
+        }
+  
+        this.events.emit("watchContract", this);
+        
+      });
    },
 
    /**
@@ -194,115 +208,89 @@ Contract.prototype = {
  * the module with the init-function.
  */
 module.exports = function () {
-    var contracts = [];
+   var contracts = [];
 
-    function handleMessage(msg) {
-        contracts.forEach(function (c) {
-            if (utils.normalizeAdr(c.config.adr) == utils.normalizeAdr(msg.to)) {
-                c.getStorageIsOpen(function () {
-                    c.getCurrentUser(function () {
-                        c.getOwner(function () {
-                            // if the user sent the message is the one registered or the owner
-                            if (c.storageIsOpen &&
-                                c.currentUser == utils.normalizeAdr(msg.from) &&
-                                utils.normalizeAdr(msg.from) == utils.normalizeAdr(c.owner)) {
+   function handleMessage(msg) {
+      contracts.forEach(function (c) {
+         c.updateStorage(function() {
+            if (utils.normalizeAdr(c.config.adr) == utils.normalizeAdr(msg.to) && c.storageIsOpen() && c.isAllowed(msg.from))
+               // now send open-event
+               c.changeState(msg.msg.indexOf("open") >= 0, true);
+         });
+      });
+   }
 
-                                c.changeState(msg.msg.indexOf("open") >= 0, true);
-                            }
-                        });
-                    });
-                });
-            }
-        });
-    }
+  
 
    /**
     * initialze or entry-function of the module
     */
-    this.init = function (arg) {
-        var config = arg.config.modules.eth;
-        console.log("Init contracts for client " + config.client);
+   this.init = function (arg) {
+      var config = arg.config.modules.eth;
+      console.log("Init contracts for client " + config.client);
 
-        // stop if this is a reinit
-        if (arg.oldConfig)
-            contracts.forEach(function (c) {  c.stopWatching();  });
-        else
-            arg.events.on("message", handleMessage);
-        contracts.length = 0;
+      // stop if this is a reinit
+      if (arg.oldConfig)
+         contracts.forEach(function (c) {  c.stopWatching();  });
+      else
+         arg.events.on("message", handleMessage);
+      contracts.length = 0;
 
-        // init the provider
-        var web3 = this.web3 = this.web3 || new Web3();
-        var events = this.events;
-        if (!arg.oldConfig || config.client != arg.oldConfig.modules.eth.client)
-            web3.setProvider(createProvider(web3,config.client));
+      // init the provider
+      var web3 = this.web3 = this.web3 || new Web3();
+      var events = this.events;
+      if (!arg.oldConfig || config.client != arg.oldConfig.modules.eth.client)
+         web3.setProvider(createProvider(web3,config.client));
 
-        // TODO: Related to contracts Admin cmd
-        // var contractsCounter = 0;
-        // var contractsResult = "all Contracts: \r\n";
-        // events.on("contractListed", function (contractsNum) {
-        //     contractsCounter ++;
-        //     if (contractsCounter == contractsNum) {
-        //         return result;
-        //     }
-        // });
-
-        // init the contracts
-        Object.keys(config.contracts).forEach(function (cid) {
-            var c = new Contract(cid, config.contracts[cid], events, web3);
-            c.startWatching();
-            contracts.push(c);
-        });
-
-        // TODO: Figure out a proper way to make this asynchronous
-        // // add custom command
-        // arg.events.emit("adminAddCmd", {
-        //     name    : "contracts",
-        //     comment : "lists all Contracts and their status",
-        //     fnc     : function() {
-        //         var result = "all Contracts: \r\n";
-        //         for (var i = 0; i < contracts.length; i++) {
-        //             var c = contracts[i];
-        //             getCurrentUser(function (contract) {
-        //                 contract.getStorageIsOpen (function (contract2) {
-        //                     open = (c.storageIsOpen !== "0x" && c.storageIsOpen !== "0x0");
-        //                     result += c.id + ": open= " + open + " + user="+ c.currentUser +" \r\n";
-        //                 });
-        //             });
-        //         }
-        //         return result;
-        //     }
-        // });
-
-        // add custom command
-        arg.events.emit("adminAddCmd", {
-            name    : "set",
-            comment : "sets the status of a contract: set <DEV> open/close {force}",
-            fnc     : function(id, value, force) {
-                for (var i = 0; i < contracts.length; i++) {
-                    var c = contracts[i];
-                    if (c.id == id) {
-                        if (force) {
-                            arg.events.emit("changeState", {
-                                open : value.indexOf("open") >= 0,
-                                id : id,
-                                config : c.config,
-                                sender : this
-                            });
-                        } else {
-                            c.getCurrentUser(function (contract) {
-                                arg.events.emit("message", {
-                                    to     : c.config.adr,
-                                    "from" : c.currentUser,
-                                    msg   : value
-                                });
-                            });
-                        }
-                        return "sent "+ value + " event to " + id;
-                    }
-                }
-                return id+" not found in contracts. See available contracts with 'contracts'";
+      // init the contracts
+      Object.keys(config.contracts).forEach(function (cid) {
+         var c = new Contract(cid, config.contracts[cid], events, web3);
+         c.startWatching();
+         contracts.push(c);
+      });
+      
+      // add custom command
+      arg.events.emit("adminAddCmd", { 
+         name    : "contracts",
+         comment : "lists all Contracts and their status",
+         fnc     : function() {
+            var result = "all Contracts: \r\n";
+            for (var i = 0; i < contracts.length; i++) {
+               var c = contracts[i];
+               result+=c.id + ": open= "+c.isStateOpen()+ " + user="+c.getCurrentUser()+" \r\n";
             }
-        });
+            return result;
+         }
+      });
 
-    }
+      // add custom command
+      arg.events.emit("adminAddCmd", { 
+         name    : "set",
+         comment : "sets the status of a contract: set <DEV> open/close {force}",
+         fnc     : function(id,value, force) {
+            for (var i = 0; i < contracts.length; i++) {
+               var c = contracts[i];
+               if (c.id==id) {
+                  if (force) 
+                     arg.events.emit("changeState", {
+                        open : value.indexOf("open")>=0,
+                        id : id,
+                        config : c.config,
+                        sender : this
+                     });
+                 else
+                     arg.events.emit("message", {
+                          to     : c.config.adr,
+                          "from" : c.getCurrentUser(),
+                           msg   : value
+                     });
+                  return "sent "+value+" event to "+id;
+               }
+            }
+            
+            return id+" not found in contracts. See available contracts with 'contracts'";
+         }
+      });
+
+   }
 };
