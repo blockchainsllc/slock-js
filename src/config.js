@@ -5,6 +5,12 @@ var fs   = require('fs');
 var core = require('./core.js');
 var yaml = require('js-yaml');
 
+function parseData(data, fileName) {
+    return fileName.indexOf(".yaml", fileName.length - ".yaml".length) !== -1
+        ? core(yaml.load(data))
+        : core(JSON.parse(data));
+}
+
 function Config() {}
 Config.start = function(configFile) {
     // read the config-file...
@@ -14,15 +20,16 @@ Config.start = function(configFile) {
             console.log("Could not read the " + configFile + "  :"+err);
         } else {
             // start the application with the loaded config.
-            var main = core(JSON.parse(data));
+            var main = parseData(data, configFile);
 
             function reinit(err, data, count) {
-                if (err) return;
+                if (err)
+                    return;
                 var conf={};
                 try {
-                    conf = JSON.parse(data);
+                    conf = parseData(data, configFile);
                 } catch (e) {
-                    if (!count || count < 5)
+                    if (!count || count < 5) {
                         setTimeout(
                             function(){
                                 fs.readFile(configFile,
@@ -33,8 +40,9 @@ Config.start = function(configFile) {
                             },
                             500
                         );
-                    else
+                    } else {
                         console.log("Error trying to update from the config " + configFile);
+                    }
                     return;
                 }
                 if (JSON.stringify(conf) == JSON.stringify(main.config))
@@ -42,12 +50,12 @@ Config.start = function(configFile) {
                 console.log("Config file ("+configFile+") changed. Reloading...");
                 main.oldConfig = main.config;
                 main.config    = conf;
-                main.events.emit("init",main);
+                main.events.emit("init", main);
             }
 
             // watch the config for changes and call reinit
-            fs.watch(configFile,function (event, filename){
-                fs.readFile(configFile,'utf-8', reinit);
+            fs.watch(configFile, function (event, filename) {
+                fs.readFile(configFile, 'utf-8', reinit);
             });
         }
     });

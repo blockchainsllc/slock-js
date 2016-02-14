@@ -6,11 +6,11 @@
   "main": "slock.js",
   "bugs": {
     "url"   : "https://github.com/slockit/slock-js/issues",
-    "email" : "simon.jentzsch@slock.it" 
+    "email" : "simon.jentzsch@slock.it"
   },
   "repository": {
      "type" : "git",
-     "url"  : "https://github.com/slockit/slock-js" 
+     "url"  : "https://github.com/slockit/slock-js"
   },
   "scripts": {
     "test": "mocha",
@@ -19,7 +19,8 @@
   "dependencies": {
     "events": "~1.0.2",
     "web3": "git://github.com/slockit/web3.js.git",
-    "websocket": "^1.0.19"
+    "websocket": "^1.0.19",
+    "js-yaml": "*"
   },
   "devDependencies": {},
   "keywords": [
