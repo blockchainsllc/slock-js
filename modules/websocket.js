@@ -62,6 +62,7 @@ module.exports = function () {
             });
 				
             sendFunctions[id]=function(msg) {
+                
                connection.sendUTF(JSON.stringify({ from: id, to:msg.to, cmd: "msg", adr: id, msg:msg }));
             };
             
