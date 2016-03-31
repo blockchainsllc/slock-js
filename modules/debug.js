@@ -10,5 +10,8 @@ module.exports = function() {
 	     this.events.on('message',function(m) {
 	         console.log('Debug : message '+JSON.stringify(m));
 	     });
+	     this.events.on('sendMessage',function(m) {
+	         console.log('Debug : sendMessage '+JSON.stringify(m));
+	     });
 	};
 };

@@ -1,0 +1,4 @@
+[
+    { "name": "Open" , "type": "event", "inputs": [], "outputs": [] },
+    { "name": "Close", "type": "event", "inputs": [], "outputs": [] }
+]

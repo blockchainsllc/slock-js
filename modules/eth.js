@@ -19,10 +19,8 @@ function Contract(id, config, events, web3) {
   this.id       = id;
   this.events   = events;
   this.web3     = web3;
-  this.contract = web3.eth.contract([
-    { name: 'Open' , type: 'event', inputs: [], outputs: [] },
-    { name: 'Close', type: 'event', inputs: [], outputs: [] },
-  ]).at(config.adr);
+  this.abi      = config.def ? require('../abi/'+config.def+".json") : config.abi || require('../abi/lock.0.9.json');
+  this.contract = web3.eth.contract(this.abi).at(config.adr);
   this.storage = {};
 }
 
@@ -36,27 +34,46 @@ Contract.prototype = {
 
    updateStorage : function(callback) {
         var batch = this.web3.createBatch(), resCount= 0, maxCount=0, _=this;
-        function addValue(name, index) {
-            maxCount+=1;
-            batch.add( _.web3.eth.getStorageAt.request(_.config.adr,index,'latest',function(error,val){
-               if (error)
-                  console.log("Could not get the value for "+name+" for contract "+_.config.adr);
-               else {
-                  resCount+=1;
-                  _.storage[name]= val;
-                  if (maxCount==resCount && callback) callback.call(_); 
+        if (_.config.def || _.config.abi) {
+            _.abi.forEach(function(entry) {
+               if (entry.constant && !entry.inputs.length) {
+                  maxCount+=1;
+                  batch.add(_.contract[entry.name].request(function(error,val) {
+                     _.storage[entry.name]= val;
+                     resCount+=1;
+                     if (maxCount==resCount && callback) callback.call(_); 
+                  }));
                }
-             }));
-         }
+            });
+        }
+        else {
+           // old fallback!
+            function addValue(name, index) {
+                  maxCount+=1;
+                  batch.add( _.web3.eth.getStorageAt.request(_.config.adr,index,'latest',function(error,val){
+                     if (error)
+                        console.log("Could not get the value for "+name+" for contract "+_.config.adr);
+                     else {
+                        resCount+=1;
+                        _.storage[name]= val;
+                        if (maxCount==resCount && callback) callback.call(_); 
+                     }
+                  }));
+               }
+               
+               
 
-         addValue('owner'    , 0);
-         addValue('deposite' , 1);
-         addValue('price'    , 2);
-         addValue('user'     , 3);
-         addValue('open'     , 4);
-         addValue('openTime' , 5);
-         addValue('timeBlock', 7);
-         batch.execute();
+               addValue('owner'    , 0);
+               addValue('deposite' , 1);
+               addValue('price'    , 2);
+               addValue('user'     , 3);
+               addValue('open'     , 4);
+               addValue('openTime' , 5);
+               addValue('timeBlock', 7);
+           
+        }
+        
+        batch.execute();
    },
 
 
@@ -75,6 +92,7 @@ Contract.prototype = {
          open : isOpen,
          id : this.id,
          config : this.config,
+         adr    : utils.normalizeAdr(this.config.adr),
          sender : this
       });
    },
@@ -125,8 +143,7 @@ Contract.prototype = {
     * @returns {Boolean}
     */
    isStateOpen : function () {
-      var open = this.storageIsOpen();
-      return open !== "0x" && open !== "0x0";
+      return this.storageIsOpen();
    },
 
    /**
@@ -134,7 +151,7 @@ Contract.prototype = {
     * @returns
     */
    storageIsOpen : function () {
-      return this.storage.open;
+      return this.storage.isRented;
    },
 
    /**

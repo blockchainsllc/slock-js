@@ -16,10 +16,20 @@ function getIpAdresses() {
 
 module.exports = function () {
 
+   var sendFunctions = {};
+
    // we use the events and config from the prototype, because the
    // "watchContract"-event
    // may be triggered before the init-methode is called
    var events = this.events, wsConfig = this.config.modules.websocket;
+   events.on("sendMessage", function (msg) {
+      var send = sendFunctions[msg.from];
+      if (send) 
+         send(msg); 
+      else
+         console.log("Error sending a message, which could not be delivered, because from:"+msg.from+" was not found! "+JSON.stringify(msg));
+   });
+
    events.on("watchContract", function (contract) {
       
       // the id to register on wsserver
@@ -51,6 +61,10 @@ module.exports = function () {
                }
             });
 				
+            sendFunctions[id]=function(msg) {
+               connection.sendUTF(JSON.stringify({ from: id, to:msg.to, cmd: "msg", adr: id, msg:msg }));
+            };
+            
             // register with its id in order to be able to get messages
             connection.sendUTF(JSON.stringify({ cmd: "init", adr: id, ips: getIpAdresses() }));
          });

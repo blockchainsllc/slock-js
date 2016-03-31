@@ -43,5 +43,8 @@ module.exports = function(configData) {
     // init all Modules
     app.events.emit("init",app);
 
+    // init all Modules
+    app.events.emit("postInit",app);
+
     return app;
 };

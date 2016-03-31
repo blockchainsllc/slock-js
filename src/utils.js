@@ -8,7 +8,7 @@ module.exports = {
 		if (a.length>2 && a[1]=='x') a=a.substring(2);
 		while (a.length>0 && a.substring(0,2)=="00") a=a.substring(2);
 		while (a.length<40) a="0"+a;
-		return "0x"+a;
+		return "0x"+a.toLowerCase();
 	}
  
 }
